@@ -2,41 +2,48 @@ import  { useState } from 'react';
 
 const TodoListApp = () => {
   const [task, setTask] = useState('');
-  const [tasksList, setTasksList] = useState([]);
+  const [taskList, setTaskList] = useState([]);
 
   const handleTaskChange = (event) => {
     setTask(event.target.value);
   };
 
-  const handleAddTask = () => {
+  const addTask = () => {
     if (task.trim() !== '') {
-      setTasksList([...tasksList, task]);
+      setTaskList([...taskList, { description: task, completed: false }]);
       setTask('');
     }
   };
 
-  const handleDeleteTask = (index) => {
-    const newTasksList = tasksList.filter((_, i) => i !== index);
-    setTasksList(newTasksList);
+  const deleteTask = (index) => {
+    const updatedTaskList = [...taskList];
+    updatedTaskList.splice(index, 1);
+    setTaskList(updatedTaskList);
+  };
+
+  const toggleComplete = (index) => {
+    const updatedTaskList = [...taskList];
+    updatedTaskList[index].completed = !updatedTaskList[index].completed;
+    setTaskList(updatedTaskList);
   };
 
   return (
-    <div>
-      <h1>To-Do List</h1>
+    <div className="todo-list-container">
+      <h1>My To-Do List</h1>
       <div>
-        <input
-          type="text"
-          value={task}
-          onChange={handleTaskChange}
-          placeholder="Enter a new task"
-        />
-        <button onClick={handleAddTask}>Add Task</button>
+        <input type="text" value={task} onChange={handleTaskChange} />
+        <button onClick={addTask}>Add Task</button>
       </div>
       <ul>
-        {tasksList.map((task, index) => (
+        {taskList.map((taskItem, index) => (
           <li key={index}>
-            {task}
-            <button onClick={() => handleDeleteTask(index)}>Delete</button>
+            <span style={{ textDecoration: taskItem.completed ? 'line-through' : 'none' }}>
+              {taskItem.description}
+            </span>
+            <button onClick={() => toggleComplete(index)}>
+              {taskItem.completed ? 'Mark Incomplete' : 'Mark Complete'}
+            </button>
+            <button onClick={() => deleteTask(index)}>Delete</button>
           </li>
         ))}
       </ul>
