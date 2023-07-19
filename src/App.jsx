@@ -1,49 +1,57 @@
 import  { useState } from 'react';
 
-const TodoListApp = () => {
-  const [task, setTask] = useState('');
-  const [taskList, setTaskList] = useState([]);
+const TodoList = () => {
+  const [taskInput, setTaskInput] = useState('');
+  const [tasks, setTasks] = useState([]);
+  const [completedTasks, setCompletedTasks] = useState([]);
 
-  const handleTaskChange = (event) => {
-    setTask(event.target.value);
+  const handleInputChange = (event) => {
+    setTaskInput(event.target.value);
   };
 
-  const addTask = () => {
-    if (task.trim() !== '') {
-      setTaskList([...taskList, { description: task, completed: false }]);
-      setTask('');
+  const handleAddTask = (event) => {
+    event.preventDefault();
+    if (taskInput.trim() !== '') {
+      setTasks([...tasks, taskInput]);
+      setTaskInput('');
     }
   };
 
-  const deleteTask = (index) => {
-    const updatedTaskList = [...taskList];
-    updatedTaskList.splice(index, 1);
-    setTaskList(updatedTaskList);
+  const handleCompleteTask = (index) => {
+    const completedTask = tasks[index];
+    setCompletedTasks([...completedTasks, completedTask]);
+    const updatedTasks = tasks.filter((_, i) => i !== index);
+    setTasks(updatedTasks);
   };
 
-  const toggleComplete = (index) => {
-    const updatedTaskList = [...taskList];
-    updatedTaskList[index].completed = !updatedTaskList[index].completed;
-    setTaskList(updatedTaskList);
+  const handleDeleteTask = (index) => {
+    const updatedTasks = tasks.filter((_, i) => i !== index);
+    setTasks(updatedTasks);
   };
 
   return (
     <div className="todo-list-container">
-      <h1>My To-Do List</h1>
-      <div>
-        <input type="text" value={task} onChange={handleTaskChange} />
-        <button onClick={addTask}>Add Task</button>
-      </div>
+      <h1>To-Do List</h1>
+      <form onSubmit={handleAddTask}>
+        <input type="text" value={taskInput} onChange={handleInputChange} />
+        <button type="submit">Add Task</button>
+      </form>
+      <h2>Tasks:</h2>
       <ul>
-        {taskList.map((taskItem, index) => (
+        {tasks.map((task, index) => (
           <li key={index}>
-            <span style={{ textDecoration: taskItem.completed ? 'line-through' : 'none' }}>
-              {taskItem.description}
-            </span>
-            <button onClick={() => toggleComplete(index)}>
-              {taskItem.completed ? 'Mark Incomplete' : 'Mark Complete'}
-            </button>
-            <button onClick={() => deleteTask(index)}>Delete</button>
+            {task}
+            <button onClick={() => handleCompleteTask(index)}>Complete</button>
+            <button onClick={() => handleDeleteTask(index)}>Delete</button>
+          </li>
+        ))}
+      </ul>
+      <h2>Completed Tasks:</h2>
+      <ul>
+        {completedTasks.map((task, index) => (
+          <li key={index}>
+            {task}
+            {/* You can add additional logic here for unmarking the task as complete if needed */}
           </li>
         ))}
       </ul>
@@ -51,4 +59,4 @@ const TodoListApp = () => {
   );
 };
 
-export default TodoListApp;
+export default TodoList;
